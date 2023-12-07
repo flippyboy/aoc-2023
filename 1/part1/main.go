@@ -24,7 +24,7 @@ func textToRows(data string) (rows []string) {
 	cleanData := reg.ReplaceAllString(data, "${1}")
 
 	rows = strings.Fields(cleanData)
-	return rows
+	return
 }
 
 func calculate(row string, startValue int) (endValue int) {
