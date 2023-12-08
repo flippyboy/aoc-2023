@@ -15,9 +15,11 @@ type roll struct {
 }
 
 type game struct {
-	id    int
-	rolls []roll
-	valid bool
+	id       int
+	rolls    []roll
+	maxRed   int
+	maxGreen int
+	maxBlue  int
 }
 
 func readFile(path string) (data string) {
@@ -41,8 +43,6 @@ func parseData(rows []string) (parsed []game) {
 		var current game
 		var err error
 
-		current.valid = true
-
 		splitId := strings.Split(item, ":")
 
 		re := regexp.MustCompile(`\d+`)
@@ -64,22 +64,22 @@ func parseData(rows []string) (parsed []game) {
 			for _, color := range strings.Split(rolls, ",") {
 				if red_re.MatchString(color) {
 					num, _ := strconv.Atoi(re.FindString(color))
-					if num > 12 {
-						current.valid = false
+					if num > current.maxRed {
+						current.maxRed = num
 					}
 					currentRoll.red = num
 				}
 				if green_re.MatchString(color) {
 					num, _ := strconv.Atoi(re.FindString(color))
-					if num > 13 {
-						current.valid = false
+					if num > current.maxGreen {
+						current.maxGreen = num
 					}
 					currentRoll.green = num
 				}
 				if blue_re.MatchString(color) {
 					num, _ := strconv.Atoi(re.FindString(color))
-					if num > 14 {
-						current.valid = false
+					if num > current.maxBlue {
+						current.maxBlue = num
 					}
 					currentRoll.blue = num
 				}
@@ -103,9 +103,7 @@ func main() {
 
 	for _, game := range parsedGames {
 		fmt.Println(game)
-		if game.valid {
-			tot = tot + game.id
-		}
+		tot = tot + (game.maxRed * game.maxBlue * game.maxGreen)
 	}
 
 	fmt.Println(tot)
