@@ -18,7 +18,7 @@ type part struct {
 type gear struct {
 	row    int
 	coord  []int
-	values [2]int
+	values []int
 }
 
 func readFile(path string) (data string) {
@@ -117,15 +117,38 @@ func main() {
 	allParts := parseNumbers(rows)
 	matchedParts := matchParts(rows, allParts)
 
-	for _, parts := range matchedParts {
-		if parts.valid {
-			totalResult = totalResult + parts.value
+	for _, gear := range parseGears(rows) {
+		var gearMatch []int
+		var searchRows []int
+		if gear.row > 0 {
+			searchRows = append(searchRows, gear.row-1)
 		}
+
+		searchRows = append(searchRows, gear.row)
+
+		if gear.row+1 < len(rows) {
+			searchRows = append(searchRows, gear.row+1)
+		}
+
+		for _, part := range matchedParts {
+			for _, row := range searchRows {
+				if part.row == row {
+					startCoord := gear.coord[0]
+					endCoord := gear.coord[1]
+					if startCoord >= part.coord[0] && startCoord <= part.coord[1] {
+						gearMatch = append(gearMatch, part.value)
+					} else if endCoord >= part.coord[0] && endCoord <= part.coord[1] {
+						gearMatch = append(gearMatch, part.value)
+					}
+				}
+			}
+		}
+		if len(gearMatch) == 2 {
+			gearMultiply := gearMatch[0] * gearMatch[1]
+			totalResult = totalResult + gearMultiply
+		}
+		gear.values = gearMatch
 	}
 
-	for _, gearMatch 
-	// allGears := parseGears(rows)
-
-	fmt.Println(allParts)
-
+	fmt.Println("Total is:", totalResult)
 }
