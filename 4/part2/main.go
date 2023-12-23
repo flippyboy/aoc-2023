@@ -55,7 +55,7 @@ func parseData(rows []string) (parsed []card) {
 			nInt, _ := strconv.Atoi(n)
 			current.winning = append(current.winning, nInt)
 		}
-
+		current.scratchCards = 1
 		parsed = append(parsed, current)
 	}
 	return parsed
@@ -77,16 +77,28 @@ func parseWins(cards []card) (winCards []card) {
 	return winCards
 }
 
+func parseCards(cards []card) []card {
+	for c := 0; c < len(cards)-1; c++ {
+		for i := cards[c].id; i < cards[c].id+cards[c].points; i++ {
+			cards[min(c+i, len(cards)-1)].scratchCards = +cards[c].points
+		}
+		cards = append(cards, cards[c])
+	}
+	return cards
+}
+
 func main() {
-	var points int
-	data := readFile("file.txt")
+	data := readFile("testinput.txt")
 	rows := textToRows(data)
 
 	parsedGames := parseData(rows)
 	parsedWins := parseWins(parsedGames)
-	for _, p := range parsedWins {
-		points = points + p.points
+
+	for c := 0; c < len(parsedWins)-1; c++ {
+		for i := parsedWins[c].id; i < parsedWins[c].id+parsedWins[c].points; i++ {
+			parsedWins[min(c+i, len(parsedWins)-1)].scratchCards = parsedWins[min(c+i, len(parsedWins)-1)].scratchCards + parsedWins[c].scratchCards
+		}
 	}
 
-	fmt.Println(points)
+	fmt.Println(parsedWins)
 }
