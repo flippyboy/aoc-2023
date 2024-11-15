@@ -77,28 +77,21 @@ func parseWins(cards []card) (winCards []card) {
 	return winCards
 }
 
-func parseCards(cards []card) []card {
-	for c := 0; c < len(cards)-1; c++ {
-		for i := cards[c].id; i < cards[c].id+cards[c].points; i++ {
-			cards[min(c+i, len(cards)-1)].scratchCards = +cards[c].points
-		}
-		cards = append(cards, cards[c])
-	}
-	return cards
-}
-
 func main() {
-	data := readFile("testinput.txt")
+	data := readFile("input.txt")
 	rows := textToRows(data)
 
 	parsedGames := parseData(rows)
 	parsedWins := parseWins(parsedGames)
+	var totCards int
 
-	for c := 0; c < len(parsedWins)-1; c++ {
-		for i := parsedWins[c].id; i < parsedWins[c].id+parsedWins[c].points; i++ {
-			parsedWins[min(c+i, len(parsedWins)-1)].scratchCards = parsedWins[min(c+i, len(parsedWins)-1)].scratchCards + parsedWins[c].scratchCards
+	for c := 0; c < len(parsedWins); c++ {
+		x := parsedWins[c]
+		for i := x.id; i < x.id+x.points; i++ {
+			parsedWins[i].scratchCards = parsedWins[i].scratchCards + parsedWins[c].scratchCards
 		}
+		totCards = totCards + parsedWins[c].scratchCards
 	}
 
-	fmt.Println(parsedWins)
+	fmt.Println(totCards)
 }
